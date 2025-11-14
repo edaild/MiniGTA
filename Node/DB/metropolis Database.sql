@@ -10,7 +10,13 @@ create table players(
     player_level int not null,
     player_last_login_time timestamp null default null,
 	foreign key(player_character_id) references CharacterCard(character_id)
-) auto_increment = 10000;
+    );
+
+-- 플레이어 인벤토리
+create table player_Iventory(
+player_inventory_id int auto_increment primary key,
+plaeyr_characterCard_id int not null
+);
 
 -- 캐릭터 카드
 create table characterCard(
@@ -32,6 +38,7 @@ create table shop(
     charactgercard_id int not null,
     character_price int not null,
     charactercard_count int not null,
+    characteecard_buyTime timestamp null default null,
 	foreign key(charactgercard_id) references CharacterCard(character_id)
 );
 
@@ -42,7 +49,11 @@ insert into shop(charactgercard_id,character_price,charactercard_count)value
 ('4','100','1'),
 ('5','100','1');
 
-
-
-
-
+-- 게임 룸
+create table GameRoom(
+	room_id int auto_increment primary key,
+    room_name int not null,
+	winerplayer_id int not null,
+    createroom timestamp null default null,
+    foreign key(winerplayer_id) references players(player_id)
+);
