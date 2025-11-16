@@ -6,37 +6,40 @@ const app = express();
 
 const pool = mysql.createPool({
     host : 'localhost',
-    name : 'root',
+    user : 'root',
     password : '1234',
-    database : 'metropolis'
+    database : 'MetroPolis'
 
 });
 
 app.use(express.json());
 
-app.post('/charactercard', async(req, res) =>{
+app.get('/charactercard', async(req, res) =>{
     try
     {
         const[charactercard] = await pool.query(
-            "SELECT character_name, character_description FROM charactercard",
+            "SELECT character_id, character_name, character_description FROM charactercard",
         );
+        res.status(200).json(charactercard);
+
     }
     catch
     {
-        res.status(500).json({success : false , message : error.message});
+        res.status(500).json({success : false , message : "서버 에러 발생"});
     }
 });
 
-app.post('shop', async(req, res) =>{
+app.get('/shop', async(req, res) =>{
     try
     {
          const[shop] = await pool.query(
-            "SELECT c.character_name as character_name,  character_price, charactercard_count FROM shop s JOIN characterCard c on s.charactgercard_id = c.character_id",
+            "SELECT shop_id, c.character_name as character_name,  character_price, charactercard_count FROM shop s JOIN characterCard c on s.charactgercard_id = c.character_id",
         );
+        res.status(200).json(shop);
     }
     catch
     {
-         res.status(500).json({success : false , message : error.message});
+         res.status(500).json({success : false , message : "서버 에러 발생"});
     }
 })
 

@@ -57,3 +57,4 @@ create table GameRoom(
     createroom timestamp null default null,
     foreign key(winerplayer_id) references players(player_id)
 );
+

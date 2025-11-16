@@ -13,8 +13,9 @@ public class PlayerController : MonoBehaviour
     public Vector3 fnisyPlayerPosition;
     public bool isMoving;
     public Collider player_collider;
-    
     private int currentPositionIndex;
+
+    private bool isreturn;
 
     public void Awake()
     {
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
     {
         initialY = transform.position.y;
         Debug.Log(boardPositions.Count);
+        Debug.Log("initialY");
     }
 
     private void Update()
@@ -40,15 +42,23 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.N) && !isMoving)
         {
             int diceResult = Random.Range(1, 7);
-            Debug.Log($"ÁÖ»çÀ§ °á°ú: {diceResult}");
+            Debug.Log($"ì£¼ì‚¬ìœ„ ìˆ˜ëŠ”?: {diceResult}");
 
             int nextIndex = (currentPositionIndex + diceResult) % boardPositions.Count;
-
             targetPosition = boardPositions[nextIndex];
-           isMoving = true;
+            currentPositionIndex += nextIndex;
+            isMoving = true;
         }
 
-     
+        ResetCurrentPositionIndex();
+
+
+    }
+
+    private void ResetCurrentPositionIndex()
+    {
+        if(currentPositionIndex >= 28)
+            currentPositionIndex = 0;
     }
 
     private void HandleMove()
@@ -66,7 +76,7 @@ public class PlayerController : MonoBehaviour
         if (transform.position == targetPositionFixedY)
         {
             isMoving = false;
-            Debug.Log("¸ñÇ¥ ÁöÁ¡ µµÂø ¿Ï·á.");
+            Debug.Log("ëª©ì ì§€ ë„ì°©.");
             player_collider.enabled = true;
         }
             
@@ -76,24 +86,16 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Block"))
         {
-            Debug.Log("¸ñÀûÁö¿Í Ãæµ¹");
+            Debug.Log("ë¸”ëŸ­ê³¼ ì¶©ëŒ");
             BlockData blockData = collision.gameObject.GetComponent<BlockData>();
 
-            if(blockData == null)
-            {
-                Debug.LogError($"'{collision.gameObject.name}' ¿¡ ÄÄÆ÷³ÍÆ®°¡ ¾øÀ½");
-                return;
-            }
+            if (blockData == null) return;
 
-            if (blockData.blockSO == null)
-            {
-                Debug.LogError($"'{collision.gameObject.name}' SO ¿¡¼ÂÀÌ ¿¬°áµÇÁö ¾ÊÀ½!");
-                return;
-            }
+            if (blockData.blockSO == null) return;
             string name = blockData.blockSO.Block_name;
             int price = blockData.blockSO.Block_price;
 
-            Debug.Log($" ÇöÀç À§Ä¡ ºí·° ÀÌ¸§: {name}, °¡°İ:{price}");
+            Debug.Log($"í˜„ì¬ ë¸”ëŸ­ ì´ë¦„ì€ : {name}, ê°€ê²©ì€:{price}");
         }
     }
 }
