@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     public Vector3 fnisyPlayerPosition;
     public bool isMoving;
     public Collider player_collider;
-    private int currentPositionIndex;
+    public int currentPositionIndex;
 
     private bool isreturn;
 
