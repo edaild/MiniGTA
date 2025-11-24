@@ -48,5 +48,5 @@ app.get('/', (req,res)=>{
 })
 
 app.listen(PORT, ()=>{
-    console.log("서버 실행중");
+    console.log("고정형 데이터 베이스 서버 실행중");
 });

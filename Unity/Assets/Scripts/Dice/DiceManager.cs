@@ -25,9 +25,12 @@ public class DiceManager : MonoBehaviour
     void Start()
     {
         if(playerController == null)
+        {
             playerController = GetComponent<PlayerController>();
+        }
         isRotateDice = true;
     }
+
     private void Update()
     {
         if (isRotateDice)
