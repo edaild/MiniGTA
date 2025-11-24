@@ -34,7 +34,7 @@ app.post('/membership', async(req, res) =>{
        
         if(isNullData){
             const[Player] = await pool.query(
-                'insert into players (player_email, player_password, player_name, player_character_id, player_level)value(?,?,?,1,1)',
+                'insert into players (player_email, player_password, player_name, player_character_id, player_level)value("?","?","?","1","1")',
                 res.status(200).json({success : true, message : '회원 가입 성공'})
             );
         }
