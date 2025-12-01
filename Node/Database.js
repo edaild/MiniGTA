@@ -1,8 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
+
 const PORT = 3000;
 
 const app = express();
+app.use(bodyParser.json());
 
 const pool = mysql.createPool({
     host : 'localhost',
