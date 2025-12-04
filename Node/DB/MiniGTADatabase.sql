@@ -1,4 +1,4 @@
-
+use minigta;
 CREATE TABLE `players` (
   `player_id` INT PRIMARY KEY AUTO_INCREMENT,
   `player_email` VARCHAR(255) UNIQUE NOT NULL,

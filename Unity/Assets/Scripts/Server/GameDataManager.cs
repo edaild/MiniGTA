@@ -8,27 +8,27 @@ using UnityEngine.TextCore.Text;
 
 
 [System.Serializable]
-public class CharacterCared
+public class Weapon
 {
-    public int character_id;
-    public string character_name;
-    public string character_description;
+    public int weapon_id;
+    public string weapon_name;
+    public float weapon_damage;
+    public string weapon_type;
 }
 
 [System.Serializable]
 public class Shop
 {
     public int shop_id;
-    public string character_name;
-    public int character_price;
-    public int charactercard_count;
+    public string gun_name;
+    public int gun_price;
 }
 
 public class GameDataManager : MonoBehaviour
 {
     public string serverurl = "http://localhost:3000";
 
-    public List<CharacterCared> characterCareds = new List<CharacterCared>();
+    public List<Weapon> Weapondata = new List<Weapon>();
     public List<Shop> shops = new List<Shop>();
 
 
@@ -39,24 +39,24 @@ public class GameDataManager : MonoBehaviour
     }
     private IEnumerator GetCharacterCared()
     {
-        using (UnityWebRequest www = UnityWebRequest.Get($"{serverurl}/charactercard"))
+        using (UnityWebRequest www = UnityWebRequest.Get($"{serverurl}/weapon"))
         {
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                characterCareds = JsonConvert.DeserializeObject<List<CharacterCared>>(www.downloadHandler.text);
+                Weapondata = JsonConvert.DeserializeObject<List<Weapon>>(www.downloadHandler.text);
                 Debug.Log("들어온 데이터");
                 Debug.Log("---------------------------");
-                foreach (var character in characterCareds)
+                foreach (var weapon  in Weapondata)
                 {
-                    Debug.Log($" 캐릭터 ID : {character.character_id} 캐릭터 이름: {character.character_name}, 캐릭터 설명: {character.character_description}");
+                    Debug.Log($"무기 이름 : {weapon.weapon_name}, 데미지 : {weapon.weapon_damage}");
                 }
                 Debug.Log("---------------------------");
             }
             else
             {
-                Debug.LogError("캐릭터 조회 실패 " + www.error);
+                Debug.LogError("무기 조회 실패 " + www.error);
             }
         }
     }
@@ -74,7 +74,7 @@ public class GameDataManager : MonoBehaviour
                 Debug.Log("---------------------------");
                 foreach (var shop in shops)
                 {
-                    Debug.Log($" 상점 id : {shop.shop_id}, 캐릭터 이름: {shop.character_name},  캐릭터 가격: {shop.character_price}, 재고: {shop.charactercard_count}");
+                    Debug.Log($" 상점 id : {shop.shop_id}, 무기 이름 : {shop.gun_name}, 무기 가격 : {shop.gun_price}");
                 }
             }
             else
