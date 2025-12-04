@@ -34,10 +34,10 @@ public class GameDataManager : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(GetCharacterCared());
+        StartCoroutine(GetWeapon());
         StartCoroutine(GetShop());
     }
-    private IEnumerator GetCharacterCared()
+    private IEnumerator GetWeapon()
     {
         using (UnityWebRequest www = UnityWebRequest.Get($"{serverurl}/weapon"))
         {
