@@ -34,17 +34,34 @@ public class NPCCaharacter
     public int base_damage;
 }
 
+[CreateAssetMenu(fileName = "WeaponList", menuName = "Game Data/Weapon List")]
+public class WeaponDataListSO : ScriptableObject
+{
+    public List<Weapon> Weapons = new List<Weapon>();
+}
+
+[CreateAssetMenu(fileName = "NPCList", menuName = "Game Data/NPC List")]
+public class NPCDataListSO : ScriptableObject
+{
+    public List<NPCCaharacter> NPCs = new List<NPCCaharacter>();
+}
+
 public class GameDataManager : MonoBehaviour
 {
     public string serverurl = "http://localhost:3000";
-
-    public List<Weapon> WeaponData = new List<Weapon>();
+    public WeaponDataListSO weaponSO;
+    public NPCDataListSO npcSO;
     public List<Shop> shops = new List<Shop>();
-    public List<NPCCaharacter> npc_characterData = new List<NPCCaharacter>();
 
 
     private void Start()
     {
+        if(weaponSO == null || npcSO == null)
+        {
+            Debug.LogError("ScriptableObject 에셋을 인스펙터에 연결해주세요!");
+            return;
+        }
+
         StartCoroutine(GetWeapon());
         StartCoroutine(GetNPC_Character());
         StartCoroutine(GetShop());
@@ -57,14 +74,10 @@ public class GameDataManager : MonoBehaviour
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                WeaponData = JsonConvert.DeserializeObject<List<Weapon>>(www.downloadHandler.text);
-                Debug.Log("들어온 데이터");
-                Debug.Log("---------------------------");
-                foreach (var weapon  in WeaponData)
-                {
-                    Debug.Log($"무기 이름 : {weapon.weapon_name}, 데미지 : {weapon.base_damage}");
-                }
-                Debug.Log("---------------------------");
+              List<Weapon> tempWeaponList = JsonConvert.DeserializeObject<List<Weapon>>(www.downloadHandler.text);
+                weaponSO.Weapons = tempWeaponList;
+                Debug.Log($"[Weapon Data] {weaponSO.Weapons.Count}개의 무기 데이터를 SO에 성공적으로 저장.");
+                UnityEditor.EditorUtility.SetDirty(weaponSO);
             }
             else
             {
@@ -81,13 +94,12 @@ public class GameDataManager : MonoBehaviour
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                npc_characterData = JsonConvert.DeserializeObject<List<NPCCaharacter>>(www.downloadHandler.text);
-                Debug.Log("들어온 데이터");
-                Debug.Log("---------------------------");
-                foreach (var npc in npc_characterData)
-                {
-                    Debug.Log($" NPC 캐릭터 id : {npc.npc_type_id}, NPC 이름 : {npc.npc_name}, 공격 여부 : {npc.is_hostile}, 공격 데미지 : {npc.base_damage}");
-                }
+                List<NPCCaharacter> tempNPCList = JsonConvert.DeserializeObject<List<NPCCaharacter>>(www.downloadHandler.text);
+                npcSO.NPCs = tempNPCList;
+
+                Debug.Log($"[NPC Data] {npcSO.NPCs.Count}개의 NPC 데이터를 SO에 성공적으로 저장했습니다.");
+
+                UnityEditor.EditorUtility.SetDirty(npcSO);
             }
             else
             {

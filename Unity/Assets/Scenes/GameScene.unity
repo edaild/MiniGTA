@@ -362,7 +362,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverurl: http://localhost:3000
-  Weapondata: []
+  weaponSO: {fileID: 11400000, guid: 2e957fee5529f2141a4e57a0bbdb9c58, type: 2}
+  npcSO: {fileID: 11400000, guid: 22f8c42355cfb3644a89e30e3ae96c43, type: 2}
   shops: []
 --- !u!4 &1934238928
 Transform:
