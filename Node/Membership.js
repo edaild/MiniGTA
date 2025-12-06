@@ -4,7 +4,7 @@ const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 
-const PORT = 3000;
+const PORT = 3002;
 
 const app = express();
 app.use(bodyParser.json());

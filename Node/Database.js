@@ -35,7 +35,7 @@ app.get('/npc_character', async(req, res) =>{
         const[npc_types] = await pool.query(
             "select npc_type_id, npc_name, is_hostile, base_health, base_damage from npc_types",
         );
-         res.status(200).json(npc_types);
+         res.status(200).json(npc_types);  
     }
     catch
     {

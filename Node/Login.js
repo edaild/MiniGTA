@@ -1,13 +1,11 @@
-require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
 
-const PORT = 3000;
+
+const PORT = 3001;
 
 const app = express();
-app.use(bodyParser.json());
 
 const pool = mysql.createPool({
     host : 'localhost',
@@ -38,7 +36,7 @@ app.post('/user', async(req,res) =>{
     }
     catch
     {
-        res.status(500).json({success : false , message : "서버 에러 발생"});
+        res.status(500).json({success : false , message : "로그인 서버 에러 발생"});
     }
 });
 
