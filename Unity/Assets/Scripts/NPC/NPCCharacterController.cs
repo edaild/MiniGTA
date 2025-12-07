@@ -20,6 +20,8 @@ public class NPCCharacterController : MonoBehaviour
         health = NpcCharacterData.base_health;
         int money = NpcCharacterData.base_money;
 
+
+
         Debug.Log($"NPC '{NpcCharacterData.npc_name}' (ID: {NpcCharacterData.npc_type_id})가 생성되었습니다.");
         Debug.Log($"초기 체력: {NpcCharacterData.base_health}");
     }

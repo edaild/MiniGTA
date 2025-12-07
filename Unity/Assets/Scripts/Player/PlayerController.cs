@@ -201,8 +201,16 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        if (currentHealth <= 0f) return;
+
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+
+        if (currentHealth <= 0f)
+        {
+            if (UIManager.Instance != null)
+                UIManager.Instance.ShowDeathUI();
+        }
     }
 
     public void Heal(float amount)
