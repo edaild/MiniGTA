@@ -33,7 +33,7 @@ app.get('/npc_character', async(req, res) =>{
     try
     {
         const[npc_types] = await pool.query(
-            "select npc_type_id, npc_name, is_hostile, base_health, base_damage from npc_types",
+            "select npc_type_id, npc_name, is_hostile, base_health, base_damage, base_money from npc_types",
         );
          res.status(200).json(npc_types);  
     }
@@ -56,6 +56,8 @@ app.get('/shop', async(req, res) =>{
          res.status(500).json({success : false , message : "상점 경로 서버 에러 발생"});
     }
 })
+
+
 
 app.get('/', (req,res)=>{
     res.send("root 경로에 서버가 성공적으로 연결되 있습니다.");

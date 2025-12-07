@@ -4,7 +4,6 @@ CREATE TABLE `players` (
   `player_email` VARCHAR(255) UNIQUE NOT NULL,
   `player_password` VARCHAR(255) NOT NULL,
   `player_name` VARCHAR(32) NOT NULL,
-  `player_level` INT DEFAULT 1,
   `player_last_login_time` TIMESTAMP Null,
   `current_money` INT DEFAULT 0,
   `is_dead` BOOLEAN DEFAULT FALSE,
@@ -14,8 +13,6 @@ CREATE TABLE `players` (
 
 drop table players;
 
-INSERT INTO players (player_email, player_password, player_name, player_level, current_money) VALUES ('test@gmail.com', '1234', 'testplayer', '1','1000');
-SELECT player_id, player_password, player_name, player_level, current_money, is_dead, player_last_login_time FROM players WHERE player_email = 'test@gmail.com' AND player_password = '1234';
 select * from players;
 
 CREATE TABLE `weapon_types` (
@@ -44,22 +41,25 @@ CREATE TABLE `npc_types` (
   `npc_name` VARCHAR(32) NOT NULL,
   `is_hostile` BOOLEAN NOT NULL,
   `base_health` INT,
-  `base_damage` INT
+  `base_damage` INT,
+  `base_money` Int
 );
 
+
+
 -- 시민 NPC
-INSERT INTO npc_types (npc_name, is_hostile, base_health, base_damage) VALUES 
-('시민1', FALSE, 1000, 0), 
-('시민2', FALSE, 1000, 0), 
-('시민3', FALSE, 1000, 0), 
-('시민4', FALSE, 1000, 0),
-('시민5', FALSE, 1000, 0); 
+INSERT INTO npc_types (npc_name, is_hostile, base_health, base_damage, base_money) VALUES 
+('시민1', FALSE, 1000, 0, 200), 
+('시민2', FALSE, 1000, 0, 200), 
+('시민3', FALSE, 1000, 0, 200), 
+('시민4', FALSE, 1000, 0, 200),
+('시민5', FALSE, 1000, 0, 200); 
 
 -- 경찰 NPC
-INSERT INTO npc_types (npc_name, is_hostile, base_health, base_damage) VALUES 
-('일반경찰', true, 1000, 50), 
-('강력팀 경찰', true, 1000, 100), 
-('경찰 특공대', true, 1000, 150);
+INSERT INTO npc_types (npc_name, is_hostile, base_health, base_damage, base_money) VALUES 
+('일반경찰', true, 1000, 50, 300), 
+('강력팀 경찰', true, 1000, 100, 350), 
+('경찰 특공대', true, 1000, 150, 400);
 
 select npc_type_id, npc_name, is_hostile, base_health, base_damage from npc_types;
 

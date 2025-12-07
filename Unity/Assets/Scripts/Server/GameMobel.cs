@@ -1,13 +1,5 @@
-using System; 
+using System;
 using UnityEngine;
-using System.Collections.Generic;
-
-[System.Serializable]
-public class LoginRequest
-{
-    public string useremail;
-    public string userpassword;
-}
 
 [System.Serializable]
 public class UserData
@@ -21,13 +13,10 @@ public class UserData
 }
 
 [System.Serializable]
-public class LoginResponse
+public class AuthRequest
 {
-    public bool success;
-    public string message;
-    //public string accessToken;
-    //public string refreshToken;
-    public UserData user;
+    public string useremail;
+    public string userpassword;
 }
 
 [System.Serializable]
@@ -39,9 +28,41 @@ public class MembershipRequest
 }
 
 [System.Serializable]
+public class LoginResponse
+{
+    public bool success;
+    public string message;
+    public UserData user;
+}
+
+[System.Serializable]
 public class MembershipResponse
 {
     public bool success;
     public string message;
     public int userId;
+}
+
+[System.Serializable]
+public class NpcKillRequest
+{
+    public string useremail;
+    public int npcTypeId;
+}
+
+[System.Serializable]
+public class NpcKillResponse
+{
+    public bool success;
+    public string message;
+    public int rewardAmount;
+    public int newMoney;
+}
+
+[System.Serializable]
+public class PlayerInfoResponse
+{
+    public bool success;
+    public UserData user;
+    public string message;
 }

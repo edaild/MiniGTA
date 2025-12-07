@@ -17,11 +17,14 @@ MonoBehaviour:
     weapon_name: "\uAD8C\uCD1D"
     base_damage: 15
     ammo_type: Small Caliber
+    WeaponPrefab: {fileID: 0}
   - weapon_type_id: 2
     weapon_name: "\uC0F7\uAD8C"
     base_damage: 40
     ammo_type: Shell
+    WeaponPrefab: {fileID: 0}
   - weapon_type_id: 3
     weapon_name: "\uC18C\uCD1D"
     base_damage: 30
     ammo_type: Large Caliber
+    WeaponPrefab: {fileID: 0}

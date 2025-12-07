@@ -50,7 +50,7 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
     {
         loginButton.interactable = false;
 
-        LoginRequest requestData = new LoginRequest
+        AuthRequest requestData = new AuthRequest
         {
             useremail = userEmail,
             userpassword = userPassword
@@ -139,7 +139,7 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
                 if (response.success)
                 {
                     Debug.Log($"회원가입 성공! 사용자 ID: {response.userId}. 이제 로그인할 수 있습니다.");
-                    lobbyUI.isLoginPanel = true;
+                    //lobbyUI.isLoginPanel = true;
                 }
                 else
                 {

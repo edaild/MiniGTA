@@ -24,7 +24,7 @@ app.post('/user', async (req, res) => {
 
     try {
         const [rows] = await pool.query(
-            'SELECT player_id, player_password, player_name, player_level, current_money, is_dead, player_last_login_time FROM players WHERE player_email = ? AND player_password = ?',
+            'SELECT * FROM players WHERE player_email = ? AND player_password = ?',
             [useremail, userpassword]
         );
 
@@ -53,6 +53,7 @@ app.post('/user', async (req, res) => {
             message: "로그인 성공 (평문 인증)",
             user: userData
         });
+        
 
     } catch (error) {
         console.error("로그인 서버 에러 발생:", error);
