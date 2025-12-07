@@ -1,17 +1,12 @@
-require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(bodyParser.json());
 app.use(express.json());
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 
 const pool = mysql.createPool({
     host: 'localhost',
@@ -19,12 +14,6 @@ const pool = mysql.createPool({
     password: '1234',
     database: 'MiniGTA'
 });
-
-const generateTokens = (playerId) => {
-    const accessToken = jwt.sign({ id: playerId }, JWT_SECRET, { expiresIn: '1h' });
-    const refreshToken = jwt.sign({ id: playerId }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-    return { accessToken, refreshToken };
-};
 
 app.post('/user', async (req, res) => {
     const { useremail, userpassword } = req.body;
@@ -35,34 +24,34 @@ app.post('/user', async (req, res) => {
 
     try {
         const [rows] = await pool.query(
-            'SELECT player_id, player_email, player_password FROM players WHERE player_email = ?',
-            [useremail]
+            'SELECT player_id, player_password, player_name, player_level, current_money, is_dead, player_last_login_time FROM players WHERE player_email = ? AND player_password = ?',
+            [useremail, userpassword]
         );
 
         const player = rows[0];
 
         if (!player) {
-            return res.status(401).json({ success: false, message: "사용자를 찾을 수 없습니다." });
-        }
-
-        const isMatch = await bcrypt.compare(userpassword, player.player_password);
-        
-        if (!isMatch) {
-            return res.status(401).json({ success: false, message: "비밀번호가 일치하지 않습니다." });
+            return res.status(401).json({ success: false, message: "이메일 또는 비밀번호가 일치하지 않습니다." });
         }
 
         await pool.query(
-            'UPDATE players SET death_time = CURRENT_TIMESTAMP WHERE player_id = ?',
+            'UPDATE players SET player_last_login_time = CURRENT_TIMESTAMP WHERE player_id = ?',
             [player.player_id]
         );
 
-        const { accessToken, refreshToken } = generateTokens(player.player_id);
+        const userData = {
+            playerId: player.player_id,
+            playerName: player.player_name,
+            playerLevel: player.player_level,
+            currentMoney: player.current_money,
+            isDead: player.is_dead,
+            lastLoginTime: new Date().toISOString()
+        };
 
-        res.status(200).json({ 
-            success: true, 
-            message: "로그인 성공", 
-            accessToken, 
-            refreshToken 
+        res.status(200).json({
+            success: true,
+            message: "로그인 성공 (평문 인증)",
+            user: userData
         });
 
     } catch (error) {
@@ -76,5 +65,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`로그인 서버 실행중: http://localhost:${PORT}`);
+    console.log(`로그인 진단 서버 실행중: http://localhost:${PORT}`);
 });

@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: WeaponList
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDataListSO
-  Weapons: []
+  Weapons:
+  - weapon_type_id: 1
+    weapon_name: "\uAD8C\uCD1D"
+    base_damage: 15
+    ammo_type: Small Caliber
+  - weapon_type_id: 2
+    weapon_name: "\uC0F7\uAD8C"
+    base_damage: 40
+    ammo_type: Shell
+  - weapon_type_id: 3
+    weapon_name: "\uC18C\uCD1D"
+    base_damage: 30
+    ammo_type: Large Caliber

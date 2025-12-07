@@ -5,15 +5,17 @@ CREATE TABLE `players` (
   `player_password` VARCHAR(255) NOT NULL,
   `player_name` VARCHAR(32) NOT NULL,
   `player_level` INT DEFAULT 1,
+  `player_last_login_time` TIMESTAMP Null,
   `current_money` INT DEFAULT 0,
   `is_dead` BOOLEAN DEFAULT FALSE,
   `death_time` TIMESTAMP NULL,
   `respawn_cost` INT DEFAULT 0
 );
 
-INSERT INTO players (player_email, player_password, player_name, player_level, current_money) VALUES 
-('test@gmail.com', '1234', 'testplayer', '1','1000');
+drop table players;
 
+INSERT INTO players (player_email, player_password, player_name, player_level, current_money) VALUES ('test@gmail.com', '1234', 'testplayer', '1','1000');
+SELECT player_id, player_password, player_name, player_level, current_money, is_dead, player_last_login_time FROM players WHERE player_email = 'test@gmail.com' AND player_password = '1234';
 select * from players;
 
 CREATE TABLE `weapon_types` (
