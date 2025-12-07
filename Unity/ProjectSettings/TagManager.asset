@@ -7,6 +7,8 @@ TagManager:
   - Block
   - Pool
   - Bullet
+  - CinemachineTarget
+  - Ground
   layers:
   - Default
   - TransparentFX

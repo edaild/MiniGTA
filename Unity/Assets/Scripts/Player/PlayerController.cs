@@ -1,16 +1,36 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
-    public float mouseSensitivity = 100f;
+    public float mouseSensitivity = 5f;
 
+    public float sprintMultiplier = 1.6f;
+    public float maxStamina = 100f;
+    public float staminaUseRate = 30f;
+    public float staminaRegenRate = 20f;
+    public float jumpStaminaCost = 10f;
+
+    public float maxHealth = 100f;
+
+    public Slider healthSlider;
+    public Slider staminaSlider;
+    public Text staminaWarningText;
+
+    private float currentStamina;
+    private float currentHealth;
     private bool isGrounded = false;
+    private bool isSprinting = false;
+    private bool staminaExhausted = false;
 
     private Rigidbody rb;
     public Transform playerCamera;
     private float xRotation = 0f;
+
+    public float CurrentStamina => currentStamina;
+    public float CurrentHealth => currentHealth;
 
     void Start()
     {
@@ -25,6 +45,26 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        currentStamina = maxStamina;
+        currentHealth = maxHealth;
+
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
+
+        if (staminaSlider != null)
+        {
+            staminaSlider.maxValue = maxStamina;
+            staminaSlider.value = currentStamina;
+        }
+
+        if (staminaWarningText != null)
+        {
+            staminaWarningText.gameObject.SetActive(false);
+        }
+
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -32,16 +72,74 @@ public class PlayerController : MonoBehaviour
     {
         HandleMouseLockToggle();
 
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
+
+        float inputX = Input.GetAxisRaw("Horizontal");
+        float inputZ = Input.GetAxisRaw("Vertical");
+        bool hasMoveInput = Mathf.Abs(inputX) > 0.1f || Mathf.Abs(inputZ) > 0.1f;
+        bool sprintInput = Input.GetKey(KeyCode.LeftShift);
+
+        float recoverThreshold = maxStamina * 0.3f;
+
+        bool canSprint = sprintInput && hasMoveInput && !staminaExhausted && isGrounded && currentStamina > 0f;
+
+        isSprinting = canSprint;
+
+        if (isSprinting)
+        {
+            currentStamina -= staminaUseRate * Time.deltaTime;
+            if (currentStamina <= 0f)
+            {
+                currentStamina = 0f;
+                staminaExhausted = true;
+                isSprinting = false;
+            }
+        }
+        else
+        {
+            if (isGrounded && currentStamina < maxStamina)
+            {
+                currentStamina += staminaRegenRate * Time.deltaTime;
+            }
+        }
+
+        currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
+
+        if (staminaExhausted && currentStamina >= recoverThreshold)
+        {
+            staminaExhausted = false;
+        }
+
+        if (staminaWarningText != null)
+        {
+            bool show = staminaExhausted || currentStamina <= 0f;
+            staminaWarningText.gameObject.SetActive(show);
+        }
+
         if (Cursor.lockState == CursorLockMode.Locked)
         {
             HandleLook();
         }
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        bool jumpInput = Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Space);
+        bool canJump = jumpInput && isGrounded && !staminaExhausted && currentStamina >= jumpStaminaCost && currentStamina >= recoverThreshold;
+
+        if (canJump)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
+            currentStamina -= jumpStaminaCost;
+            if (currentStamina <= 0f)
+            {
+                currentStamina = 0f;
+                staminaExhausted = true;
+            }
         }
+
+        if (healthSlider != null)
+            healthSlider.value = currentHealth;
+
+        if (staminaSlider != null)
+            staminaSlider.value = currentStamina;
     }
 
     void FixedUpdate()
@@ -69,8 +167,8 @@ public class PlayerController : MonoBehaviour
 
     void HandleLook()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
@@ -86,7 +184,14 @@ public class PlayerController : MonoBehaviour
         float z = Input.GetAxis("Vertical");
 
         Vector3 move = transform.right * x + transform.forward * z;
-        Vector3 targetVelocity = move.normalized * moveSpeed;
+
+        float currentSpeed = moveSpeed;
+        if (isSprinting)
+        {
+            currentSpeed *= sprintMultiplier;
+        }
+
+        Vector3 targetVelocity = move.normalized * currentSpeed;
 
         Vector3 velocityChange = targetVelocity - rb.velocity;
         velocityChange.y = 0;
@@ -94,13 +199,15 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
     }
 
-    void OnTriggerEnter(Collider other)
+    public void TakeDamage(float amount)
     {
-        isGrounded = true;
+        currentHealth -= amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
     }
 
-    void OnTriggerExit(Collider other)
+    public void Heal(float amount)
     {
-        isGrounded = false;
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
     }
 }
