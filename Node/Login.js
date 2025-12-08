@@ -41,6 +41,7 @@ app.post('/user', async (req, res) => {
 
         const userData = {
             playerId: player.player_id,
+            playerEmail: player.player_email,
             playerName: player.player_name,
             playerLevel: player.player_level,
             currentMoney: player.current_money,

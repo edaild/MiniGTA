@@ -49,9 +49,11 @@ public class NPCDataListSO : ScriptableObject
 
 public class GameDataManager : MonoBehaviour
 {
-    public static string CurrentUserEmail { get; set; } = string.Empty;
+    
+    public static string CurrentUserEmail = "ttt";
 
     public string serverurl = "http://localhost:3000";
+
     public WeaponDataListSO weaponSO;
     public NPCDataListSO npcSO;
     public List<Shop> shops = new List<Shop>();

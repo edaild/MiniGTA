@@ -90,7 +90,7 @@ app.get('/api/player/:useremail', async (req, res) => {
 
     try {
         const [rows] = await pool.query(
-            'SELECT player_id, player_name, player_level, current_money, is_dead, player_last_login_time FROM players WHERE player_email = ?',
+            'SELECT player_id, player_name, current_money, is_dead, player_last_login_time FROM players WHERE player_email = ?',
             [useremail]
         );
 

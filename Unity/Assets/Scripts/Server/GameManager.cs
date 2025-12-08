@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 public class GameManager : MonoBehaviour
 {
-    private string CurrentUserEmail => GameDataManager.CurrentUserEmail;
+    public string CurrentUserEmail => GameDataManager.CurrentUserEmail;
 
     private const string ApiBaseUrl = "http://localhost:3003";
 
