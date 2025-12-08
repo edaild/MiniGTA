@@ -103,7 +103,6 @@ app.get('/api/player/:useremail', async (req, res) => {
         const userData = {
             playerId: player.player_id,
             playerName: player.player_name,
-            playerLevel: player.player_level,
             currentMoney: player.current_money,
             isDead: player.is_dead,
             lastLoginTime: player.player_last_login_time

@@ -50,7 +50,7 @@ public class NPCDataListSO : ScriptableObject
 public class GameDataManager : MonoBehaviour
 {
     
-    public static string CurrentUserEmail = "ttt";
+    public static string CurrentUserEmail = "111";
 
     public string serverurl = "http://localhost:3000";
 
