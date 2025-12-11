@@ -55,9 +55,7 @@ app.get('/shop', async(req, res) =>{
     {
          res.status(500).json({success : false , message : "상점 경로 서버 에러 발생"});
     }
-})
-
-
+});
 
 app.get('/', (req,res)=>{
     res.send("root 경로에 서버가 성공적으로 연결되 있습니다.");

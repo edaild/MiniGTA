@@ -36979,50 +36979,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 291683445}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &292958968
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 292958970}
-  - component: {fileID: 292958969}
-  m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &292958969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 292958968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6124b6e50aa148e4d9d9834df25ec409, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &292958970
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 292958968}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &293480469
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -234452,6 +234408,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b1ebf4640dd0c478d1123ce38bfe93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPlayer:
+    player_id: 0
+    player_email: 
+    player_name: 
+    current_money: 0
   serverurl: http://localhost:3000
   weaponSO: {fileID: 11400000, guid: 2e957fee5529f2141a4e57a0bbdb9c58, type: 2}
   npcSO: {fileID: 11400000, guid: 22f8c42355cfb3644a89e30e3ae96c43, type: 2}
@@ -262883,4 +262844,3 @@ SceneRoots:
   - {fileID: 757402293}
   - {fileID: 1991950390}
   - {fileID: 79506212}
-  - {fileID: 292958970}

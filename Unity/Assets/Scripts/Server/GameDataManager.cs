@@ -35,6 +35,15 @@ public class NPCCaharacter
     public GameObject npcPrefab;
 }
 
+[System.Serializable]
+public class Player
+{
+    public int player_id;
+    public string player_email;
+    public string player_name;
+    public int current_money;
+}
+
 [CreateAssetMenu(fileName = "WeaponList", menuName = "Game Data/Weapon List")]
 public class WeaponDataListSO : ScriptableObject
 {
@@ -49,8 +58,10 @@ public class NPCDataListSO : ScriptableObject
 
 public class GameDataManager : MonoBehaviour
 {
-    
-    public static string CurrentUserEmail = "111";
+    public static GameDataManager Instance { get; private set; }
+
+    public Player currentPlayer;
+    public static string CurrentUserEmail;
 
     public string serverurl = "http://localhost:3000";
 
@@ -58,7 +69,16 @@ public class GameDataManager : MonoBehaviour
     public NPCDataListSO npcSO;
     public List<Shop> shops = new List<Shop>();
 
-
+    public void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            Destroy(gameObject);
+    }
     private void Start()
     {
         if (weaponSO == null || npcSO == null)
@@ -74,6 +94,7 @@ public class GameDataManager : MonoBehaviour
 
     private IEnumerator GetWeapon()
     {
+        if (weaponSO.Weapons != null && weaponSO.Weapons.Count > 0) yield break;
         using (UnityWebRequest www = UnityWebRequest.Get($"{serverurl}/weapon_types"))
         {
             yield return www.SendWebRequest();
@@ -93,6 +114,8 @@ public class GameDataManager : MonoBehaviour
 
     private IEnumerator GetNPC_Character()
     {
+        if (npcSO.NPCs != null && npcSO.NPCs.Count > 0) yield break;
+
         using (UnityWebRequest www = UnityWebRequest.Get($"{serverurl}/npc_character"))
         {
             yield return www.SendWebRequest();
@@ -120,7 +143,6 @@ public class GameDataManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.Success)
             {
                 shops = JsonConvert.DeserializeObject<List<Shop>>(www.downloadHandler.text);
-                Debug.Log("--- 상점 데이터 수신 완료 ---");
                 foreach (var shop in shops)
                 {
                     Debug.Log($" 상점 id : {shop.shop_id}, 무기 이름 : {shop.gun_Name}, 무기 가격 : {shop.transaction_price}");
@@ -131,5 +153,16 @@ public class GameDataManager : MonoBehaviour
                 Debug.LogError("상점 조회 실패: " + www.error);
             }
         }
+    }
+
+    public void SetPlayerData(UserData data)
+    {
+        Debug.Log("SetPlayerData 실행");
+        CurrentUserEmail = data.playerEmail;
+        currentPlayer.player_id = data.playerId;
+        currentPlayer.player_name = data.playerName;
+        currentPlayer.current_money = data.currentMoney;
+
+        Debug.Log($"플레이어 이메일 : {data.playerEmail}");
     }
 }

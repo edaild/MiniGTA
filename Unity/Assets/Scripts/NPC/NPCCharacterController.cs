@@ -44,13 +44,12 @@ public class NPCCharacterController : MonoBehaviour
             if (NpcCharacterData != null)
             {
                 string userEmail = GameDataManager.CurrentUserEmail;
-                Debug.Log(userEmail);
 
-                //if (string.IsNullOrEmpty(userEmail))
-                //{
-                //    Debug.LogError("로그인된 사용자 이메일이 GameDataManager에 설정되지 않았습니다. 보상 지급 실패.");
-                //    return;
-                //}
+                if (string.IsNullOrEmpty(userEmail))
+                {
+                    Debug.LogError("로그인된 사용자 이메일이 GameDataManager에 설정되지 않았습니다. 보상 지급 실패.");
+                    return;
+                }
 
                 StartCoroutine(SendKillRewardRequest(userEmail, NpcCharacterData.npc_type_id));
                 Destroy(transform.gameObject);

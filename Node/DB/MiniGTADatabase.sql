@@ -31,9 +31,7 @@ INSERT INTO `weapon_types` (`weapon_name`, `base_damage`, `ammo_type`) VALUES
 CREATE TABLE `player_inventory` (
   `user_Inventory_id` INT PRIMARY KEY AUTO_INCREMENT,
   `player_id` INT NOT NULL,
-  `weapon_type_id` INT NOT NULL,
-  `item_level` INT DEFAULT 1,
-  `item_count` INT DEFAULT 1
+  `weapon_type_id` INT NOT NULL
 );
 
 CREATE TABLE `npc_types` (
@@ -61,7 +59,7 @@ INSERT INTO npc_types (npc_name, is_hostile, base_health, base_damage, base_mone
 ('강력팀 경찰', true, 1000, 100, 350), 
 ('경찰 특공대', true, 1000, 150, 400);
 
-select npc_type_id, npc_name, is_hostile, base_health, base_damage from npc_types;
+select npc_type_id, npc_name, is_hostile, base_health, base_damage, base_money from npc_types;
 
 
 CREATE TABLE `shop` (
@@ -91,3 +89,5 @@ FOREIGN KEY (`gun_id`) REFERENCES `weapon_types` (`weapon_type_id`);
 
 select * from players;
 SELECT shop_id, w.weapon_name gun_name,  transaction_price, base_damage FROM shop s JOIN weapon_types w on s.gun_id = w.weapon_type_id
+
+

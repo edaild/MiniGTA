@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using JetBrains.Annotations;
 
 public class PlayerLoginMemberShipManager : MonoBehaviour
 {
@@ -78,8 +79,16 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
 
                 if (response.success)
                 {
-                    //currentAccessToken = response.accessToken;
                     Debug.Log($"로그인 성공! 이름: {response.user.playerName}, 돈: {response.user.currentMoney}");
+                    GameDataManager dataManager = GameDataManager.Instance;
+                    if (dataManager != null)
+                    {
+                        dataManager.SetPlayerData(response.user);
+                    }
+                    else
+                    {
+                        Debug.Log("dataManager을 못찾음");
+                    }
                     SceneManager.LoadScene("GameScene");
                 }
                 else
@@ -92,8 +101,8 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
                 Debug.LogError($"로그인 서버 요청 실패: {www.error} (Code: {www.responseCode})");
             }
         }
-    }
 
+    }
 
     public void OnMembershipButtonClicked()
     {
@@ -139,7 +148,6 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
                 if (response.success)
                 {
                     Debug.Log($"회원가입 성공! 사용자 ID: {response.userId}. 이제 로그인할 수 있습니다.");
-                    //lobbyUI.isLoginPanel = true;
                 }
                 else
                 {
