@@ -49,6 +49,7 @@ app.post('/reward', async (req, res) => {
             return res.status(404).json({ success: false, message: '알 수 없는 NPC 타입입니다.' });
         }
 
+        console.log("db 업데이트");
         const rewardAmount = npcInfo[0].base_money;
         const [updateResult] = await connection.query(
             'UPDATE players SET current_money = current_money + ? WHERE player_id = ?',
@@ -57,6 +58,7 @@ app.post('/reward', async (req, res) => {
 
         if (updateResult.affectedRows === 0) {
             await connection.rollback();
+             console.log("db 업데이트 실패");
             return res.status(500).json({ success: false, message: 'DB 업데이트에 실패했습니다.' });
         }
 
@@ -71,6 +73,7 @@ app.post('/reward', async (req, res) => {
             rewardAmount: rewardAmount,
             newMoney: newMoney 
         });
+        console.log("보상 지급");
 
     } catch (error) {
         if (connection) await connection.rollback(); 

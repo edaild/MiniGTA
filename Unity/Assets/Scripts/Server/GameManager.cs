@@ -2,10 +2,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public string CurrentUserEmail => GameDataManager.CurrentUserEmail;
+    public TextMeshProUGUI mounyText;
 
     private const string ApiBaseUrl = "http://localhost:3003";
 
@@ -13,7 +15,7 @@ public class GameManager : MonoBehaviour
 
     public void Start()
     {
-        StartCoroutine(FetchPlayerDataRoutine(5f));
+        StartCoroutine(FetchPlayerDataRoutine(0.3f));
     }
 
     private IEnumerator FetchPlayerDataRoutine(float interval)
@@ -49,7 +51,8 @@ public class GameManager : MonoBehaviour
                 if (response.success)
                 {
                     PlayerData = response.user;
-                    Debug.Log($"인게임 데이터 업데이트 성공: 돈: {PlayerData.currentMoney}, 레벨: {PlayerData.playerLevel}");
+                    Debug.Log($"인게임 데이터 업데이트 성공: 돈: {PlayerData.currentMoney}");
+                    mounyText.text = $"${PlayerData.currentMoney}";
                 }
                 else
                 {

@@ -21,7 +21,7 @@ CREATE TABLE `weapon_types` (
   `base_damage` INT NOT NULL,
   `ammo_type` VARCHAR(32)
 );
-
+select player_id, player_email, player_name,  current_money. from players;
 
 INSERT INTO `weapon_types` (`weapon_name`, `base_damage`, `ammo_type`) VALUES
 ('권총', 15, 'Small Caliber'),
