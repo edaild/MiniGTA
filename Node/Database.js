@@ -8,7 +8,7 @@ const app = express();
 const pool = mysql.createPool({
     host : 'localhost',
     user : 'root',
-    password : '1234',
+    password : '112233',
     database : 'MiniGTA'
 
 });

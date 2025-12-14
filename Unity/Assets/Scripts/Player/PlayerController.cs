@@ -1,36 +1,39 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Move")]
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
     public float mouseSensitivity = 5f;
 
+    [Header("Stamina")]
     public float sprintMultiplier = 1.6f;
     public float maxStamina = 100f;
     public float staminaUseRate = 30f;
     public float staminaRegenRate = 20f;
     public float jumpStaminaCost = 10f;
 
+    [Header("Health")]
     public float maxHealth = 100f;
-
+    public float hitDamage = 10f;
     public Slider healthSlider;
     public Slider staminaSlider;
     public Text staminaWarningText;
+    public GameObject deathPanel;
 
     private float currentStamina;
     private float currentHealth;
+
     private bool isGrounded = false;
     private bool isSprinting = false;
     private bool staminaExhausted = false;
+    private bool isDead = false;
 
     private Rigidbody rb;
     public Transform playerCamera;
     private float xRotation = 0f;
-
-    public float CurrentStamina => currentStamina;
-    public float CurrentHealth => currentHealth;
 
     void Start()
     {
@@ -38,10 +41,9 @@ public class PlayerController : MonoBehaviour
         rb.freezeRotation = true;
 
         playerCamera = GetComponentInChildren<Camera>()?.transform;
-
         if (playerCamera == null)
         {
-            Debug.LogError("�÷��̾� ������Ʈ�� �ڽ����� ī�޶� �������� �ʽ��ϴ�!");
+            Debug.LogError("플레이어 오브젝트의 자식으로 카메라가 존재하지 않습니다!");
             return;
         }
 
@@ -61,15 +63,20 @@ public class PlayerController : MonoBehaviour
         }
 
         if (staminaWarningText != null)
-        {
             staminaWarningText.gameObject.SetActive(false);
-        }
 
+        if (deathPanel != null)
+            deathPanel.SetActive(false);
+
+        // ✅ 시작은 FPS처럼 잠그되, visible도 같이 처리
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
+        if (isDead) return;
+
         HandleMouseLockToggle();
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, 1.1f);
@@ -82,7 +89,6 @@ public class PlayerController : MonoBehaviour
         float recoverThreshold = maxStamina * 0.3f;
 
         bool canSprint = sprintInput && hasMoveInput && !staminaExhausted && isGrounded && currentStamina > 0f;
-
         isSprinting = canSprint;
 
         if (isSprinting)
@@ -98,17 +104,13 @@ public class PlayerController : MonoBehaviour
         else
         {
             if (isGrounded && currentStamina < maxStamina)
-            {
                 currentStamina += staminaRegenRate * Time.deltaTime;
-            }
         }
 
         currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
 
         if (staminaExhausted && currentStamina >= recoverThreshold)
-        {
             staminaExhausted = false;
-        }
 
         if (staminaWarningText != null)
         {
@@ -117,13 +119,10 @@ public class PlayerController : MonoBehaviour
         }
 
         if (Cursor.lockState == CursorLockMode.Locked)
-        {
             HandleLook();
-        }
 
         bool jumpInput = Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Space);
         bool canJump = jumpInput && isGrounded && !staminaExhausted && currentStamina >= jumpStaminaCost && currentStamina >= recoverThreshold;
-
         if (canJump)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
@@ -135,33 +134,25 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (healthSlider != null)
-            healthSlider.value = currentHealth;
-
-        if (staminaSlider != null)
-            staminaSlider.value = currentStamina;
+        if (healthSlider != null) healthSlider.value = currentHealth;
+        if (staminaSlider != null) staminaSlider.value = currentStamina;
     }
 
     void FixedUpdate()
     {
+        if (isDead) return;
         if (Cursor.lockState == CursorLockMode.Locked)
-        {
             HandleMovement();
-        }
     }
 
     void HandleMouseLockToggle()
     {
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
-            if (Cursor.lockState == CursorLockMode.Locked)
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
+            bool toUnlock = (Cursor.lockState == CursorLockMode.Locked);
+
+            Cursor.lockState = toUnlock ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = toUnlock; // ✅ 이게 핵심 (안 하면 “안눌림/안보임” 터짐)
         }
     }
 
@@ -174,7 +165,6 @@ public class PlayerController : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-
         transform.Rotate(Vector3.up * mouseX);
     }
 
@@ -185,14 +175,9 @@ public class PlayerController : MonoBehaviour
 
         Vector3 move = transform.right * x + transform.forward * z;
 
-        float currentSpeed = moveSpeed;
-        if (isSprinting)
-        {
-            currentSpeed *= sprintMultiplier;
-        }
+        float currentSpeed = moveSpeed * (isSprinting ? sprintMultiplier : 1f);
 
         Vector3 targetVelocity = move.normalized * currentSpeed;
-
         Vector3 velocityChange = targetVelocity - rb.velocity;
         velocityChange.y = 0;
 
@@ -201,21 +186,28 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        if (currentHealth <= 0f) return;
+        if (isDead) return;
 
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
+        if (healthSlider != null) healthSlider.value = currentHealth;
+
         if (currentHealth <= 0f)
-        {
-            if (UIManager.Instance != null)
-                UIManager.Instance.ShowDeathUI();
-        }
+            Die();
     }
 
-    public void Heal(float amount)
+    void Die()
     {
-        currentHealth += amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+        isDead = true;
+
+        if (deathPanel != null)
+            deathPanel.SetActive(true);
+
+       
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Time.timeScale = 0f;
     }
 }

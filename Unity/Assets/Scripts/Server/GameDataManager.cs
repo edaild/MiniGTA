@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,33 +5,11 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 [System.Serializable]
-public class Weapon
-{
-    public int weapon_type_id;
-    public string weapon_name;
-    public float base_damage;
-    public string ammo_type;
-    public GameObject WeaponPrefab;
-}
-
-[System.Serializable]
 public class Shop
 {
     public int shop_id;
     public string gun_Name;
     public int transaction_price;
-}
-
-[System.Serializable]
-public class NPCCaharacter
-{
-    public int npc_type_id;
-    public string npc_name;
-    public bool is_hostile;
-    public int base_health;
-    public int base_damage;
-    public int base_money;
-    public GameObject npcPrefab;
 }
 
 [System.Serializable]
@@ -44,22 +21,14 @@ public class Player
     public int current_money;
 }
 
-[CreateAssetMenu(fileName = "WeaponList", menuName = "Game Data/Weapon List")]
-public class WeaponDataListSO : ScriptableObject
-{
-    public List<Weapon> Weapons = new List<Weapon>();
-}
-
-[CreateAssetMenu(fileName = "NPCList", menuName = "Game Data/NPC List")]
-public class NPCDataListSO : ScriptableObject
-{
-    public List<NPCCaharacter> NPCs = new List<NPCCaharacter>();
-}
 
 public class GameDataManager : MonoBehaviour
 {
     public static GameDataManager Instance { get; private set; }
 
+
+    [Header("Prefab Mapping (npc_type_id index)")]
+    public GameObject[] npcPrefabs;
     public Player currentPlayer;
     public static string CurrentUserEmail;
 
@@ -68,6 +37,7 @@ public class GameDataManager : MonoBehaviour
     public WeaponDataListSO weaponSO;
     public NPCDataListSO npcSO;
     public List<Shop> shops = new List<Shop>();
+
 
     public void Awake()
     {
@@ -79,6 +49,7 @@ public class GameDataManager : MonoBehaviour
         else
             Destroy(gameObject);
     }
+
     private void Start()
     {
         if (weaponSO == null || npcSO == null)
@@ -94,7 +65,6 @@ public class GameDataManager : MonoBehaviour
 
     private IEnumerator GetWeapon()
     {
-        if (weaponSO.Weapons != null && weaponSO.Weapons.Count > 0) yield break;
         using (UnityWebRequest www = UnityWebRequest.Get($"{serverurl}/weapon_types"))
         {
             yield return www.SendWebRequest();
@@ -114,18 +84,25 @@ public class GameDataManager : MonoBehaviour
 
     private IEnumerator GetNPC_Character()
     {
-        if (npcSO.NPCs != null && npcSO.NPCs.Count > 0) yield break;
-
         using (UnityWebRequest www = UnityWebRequest.Get($"{serverurl}/npc_character"))
         {
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                List<NPCCaharacter> tempNPCList = JsonConvert.DeserializeObject<List<NPCCaharacter>>(www.downloadHandler.text);
-                npcSO.NPCs = tempNPCList;
+                List<NPCCaharacter> tempNPCList =
+                    JsonConvert.DeserializeObject<List<NPCCaharacter>>(www.downloadHandler.text);
 
-                Debug.Log($"[NPC Data] {npcSO.NPCs.Count}개의 NPC 데이터를 SO에 성공적으로 저장");
+               
+                foreach (var npc in tempNPCList)
+                {
+                    int id = npc.npc_type_id;
+                    if (npcPrefabs != null && id >= 0 && id < npcPrefabs.Length)
+                        npc.npcPrefab = npcPrefabs[id];
+                }
+
+                npcSO.NPCs = tempNPCList;
+                Debug.Log($"[NPC Data] {npcSO.NPCs.Count}개 저장 + 프리팹 매핑 완료");
             }
             else
             {
@@ -143,6 +120,7 @@ public class GameDataManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.Success)
             {
                 shops = JsonConvert.DeserializeObject<List<Shop>>(www.downloadHandler.text);
+                Debug.Log("--- 상점 데이터 수신 완료 ---");
                 foreach (var shop in shops)
                 {
                     Debug.Log($" 상점 id : {shop.shop_id}, 무기 이름 : {shop.gun_Name}, 무기 가격 : {shop.transaction_price}");

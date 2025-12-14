@@ -10,23 +10,37 @@ namespace bullet.fx.pack
         [SerializeField] private float gravityForce;
 
         [SerializeField] private float gunAlertRadius = 20f;
+        public enum ShooterTeam { Player, Police }
 
-        public void Shoot(Vector3 forward)
+        public void Shoot(Vector3 targetPos)
+        {
+            Shoot(targetPos, ShooterTeam.Player);
+        }
+
+        public void Shoot(Vector3 targetPos, ShooterTeam team)
         {
             GameObject bullet = Instantiate(
                 bulletPrefab,
                 firePoint.position,
-                Quaternion.LookRotation(forward - firePoint.position) * Quaternion.Euler(90, 0, 0)
+                Quaternion.LookRotation(targetPos - firePoint.position) * Quaternion.Euler(90, 0, 0)
             );
 
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            
+            int layer = LayerMask.NameToLayer(team == ShooterTeam.Player ? "PlayerBullet" : "PoliceBullet");
+            bullet.layer = layer;
 
-            Vector3 direction = (forward - firePoint.position).normalized;
-            rb.velocity = direction * bulletSpeed;
+            
+            foreach (Transform t in bullet.GetComponentsInChildren<Transform>(true))
+                t.gameObject.layer = layer;
+
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            Vector3 dir = (targetPos - firePoint.position).normalized;
+            rb.velocity = dir * bulletSpeed;
             rb.AddForce(Vector3.down * gravityForce, ForceMode.Acceleration);
 
             AlertNearbyNPCs();
         }
+
 
         void AlertNearbyNPCs()
         {

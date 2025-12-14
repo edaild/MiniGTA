@@ -140,6 +140,8 @@ GameObject:
   - component: {fileID: 4331849889720792114}
   - component: {fileID: 5990537768789886725}
   - component: {fileID: 6346483544761527548}
+  - component: {fileID: 212438593787602924}
+  - component: {fileID: -7320038742147222315}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -260,6 +262,42 @@ MonoBehaviour:
   BulletTrailMaterial: {fileID: 2100000, guid: cf6917fc065af13468d7d051a191c5d2, type: 2}
   Fire2Effect: {fileID: 1356079634879675347}
   Fire3Effect: {fileID: 8660081015896966768}
+--- !u!114 &212438593787602924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297191405790434548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2baa39ecb3c6164c91dcb5fb1c45290, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 10
+--- !u!136 &-7320038742147222315
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8297191405790434548}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8660081015896966768
 GameObject:
   m_ObjectHideFlags: 0

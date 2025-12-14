@@ -9,63 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 8e689a3648772f244a88bd9891390720, type: 3}
   m_Name: NPCList
-  m_EditorClassIdentifier: Assembly-CSharp::NPCDataListSO
+  m_EditorClassIdentifier: 
   NPCs:
-  - npc_type_id: 1
-    npc_name: "\uC2DC\uBBFC1"
+  - npc_type_id: 0
+    npc_name: 
     is_hostile: 0
-    base_health: 1000
+    base_health: 0
     base_damage: 0
-    base_money: 200
-    npcPrefab: {fileID: 0}
-  - npc_type_id: 2
-    npc_name: "\uC2DC\uBBFC2"
-    is_hostile: 0
-    base_health: 1000
-    base_damage: 0
-    base_money: 200
-    npcPrefab: {fileID: 0}
-  - npc_type_id: 3
-    npc_name: "\uC2DC\uBBFC3"
-    is_hostile: 0
-    base_health: 1000
-    base_damage: 0
-    base_money: 200
-    npcPrefab: {fileID: 0}
-  - npc_type_id: 4
-    npc_name: "\uC2DC\uBBFC4"
-    is_hostile: 0
-    base_health: 1000
-    base_damage: 0
-    base_money: 200
-    npcPrefab: {fileID: 0}
-  - npc_type_id: 5
-    npc_name: "\uC2DC\uBBFC5"
-    is_hostile: 0
-    base_health: 1000
-    base_damage: 0
-    base_money: 200
-    npcPrefab: {fileID: 0}
-  - npc_type_id: 6
-    npc_name: "\uC77C\uBC18\uACBD\uCC30"
-    is_hostile: 1
-    base_health: 1000
-    base_damage: 50
-    base_money: 300
-    npcPrefab: {fileID: 0}
-  - npc_type_id: 7
-    npc_name: "\uAC15\uB825\uD300 \uACBD\uCC30"
-    is_hostile: 1
-    base_health: 1000
-    base_damage: 100
-    base_money: 350
-    npcPrefab: {fileID: 0}
-  - npc_type_id: 8
-    npc_name: "\uACBD\uCC30 \uD2B9\uACF5\uB300"
-    is_hostile: 1
-    base_health: 1000
-    base_damage: 150
-    base_money: 400
+    base_money: 0
     npcPrefab: {fileID: 0}

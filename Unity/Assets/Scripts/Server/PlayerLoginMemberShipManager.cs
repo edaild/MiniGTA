@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 
 public class PlayerLoginMemberShipManager : MonoBehaviour
 {
-   
+
     public string LoginServerUrl = "https://localhost:3001";
     public string MemeberShipServerUrl = "https://localhost:3002";
 
@@ -32,7 +32,7 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
     private void Start()
     {
         loginButton.onClick.AddListener(OnLoginButtonClicked);
-        memberButton.onClick.AddListener(OnMembershipButtonClicked); 
+        memberButton.onClick.AddListener(OnMembershipButtonClicked);
         lobbyUI = GetComponent<Looby>();
     }
 
@@ -61,7 +61,7 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
 
         using (UnityWebRequest www = UnityWebRequest.PostWwwForm($"{LoginServerUrl}/user", ""))
         {
-     
+
             www.certificateHandler = new CustomCertificateHandler();
 
             byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonRequestBody);
@@ -129,7 +129,7 @@ public class PlayerLoginMemberShipManager : MonoBehaviour
 
         using (UnityWebRequest www = UnityWebRequest.PostWwwForm($"{MemeberShipServerUrl}/membership", ""))
         {
-       
+
             www.certificateHandler = new CustomCertificateHandler();
 
             byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonRequestBody);

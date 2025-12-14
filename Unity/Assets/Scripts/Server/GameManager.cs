@@ -52,7 +52,14 @@ public class GameManager : MonoBehaviour
                 {
                     PlayerData = response.user;
                     Debug.Log($"인게임 데이터 업데이트 성공: 돈: {PlayerData.currentMoney}");
-                    mounyText.text = $"${PlayerData.currentMoney}";
+                    if (mounyText != null)
+                    {
+                        mounyText.text = $"${PlayerData.currentMoney}"; 
+                    }
+                    else
+                    {
+                        Debug.Log("예외 처리");
+                    }
                 }
                 else
                 {

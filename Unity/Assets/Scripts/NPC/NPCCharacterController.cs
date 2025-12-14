@@ -1,84 +1,112 @@
-using Newtonsoft.Json;
+Ôªøusing Newtonsoft.Json;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 
 public class NPCCharacterController : MonoBehaviour
 {
+    [Header("NPC Data")]
     public NPCCaharacter NpcCharacterData;
-    public int health;
+    public Slider hpBar;
 
+    [Header("Respawn (Citizen Only)")]
+    public GameObject respawnPrefab;   
+    public float respawnDelay = 20f;
+
+    [Header("Server")]
     private const string RewardApiUrl = "http://localhost:3003/reward";
 
-    private void Start()
+    [Header("Local Fallback (Server OFF Test)")]
+    public bool useLocalRewardFallback = true;
+    public int localFallbackMoney = 100;
+
+    int health;
+    int maxHealth;
+    bool isDead = false;
+
+    void Start()
     {
-        if (NpcCharacterData == null) return;
-
-        string name = NpcCharacterData.npc_name;
-        health = NpcCharacterData.base_health;
-        int money = NpcCharacterData.base_money;
-
-
-
-        Debug.Log($"NPC '{NpcCharacterData.npc_name}' (ID: {NpcCharacterData.npc_type_id})∞° ª˝º∫µ«æ˙Ω¿¥œ¥Ÿ.");
-        Debug.Log($"√ ±‚ √º∑¬: {NpcCharacterData.base_health}");
-    }
-
-    private void Update()
-    {
-        Die();
-
-        if (Input.GetKeyDown(KeyCode.N))
+        if (NpcCharacterData == null)
         {
-            health -= 100;
-            Debug.Log("NPC √º∑¬ ∞®º“");
+            Debug.LogError("[NPC] NpcCharacterData ÏóÜÏùå");
+            return;
         }
+
+        maxHealth = NpcCharacterData.base_health;
+        health = maxHealth;
+
+        if (hpBar != null)
+            hpBar.value = 1f;
     }
 
+    // ===================== DAMAGE =====================
+    void ApplyDamage(int damage)
+    {
+        if (isDead) return;
+
+        health -= damage;
+        if (hpBar != null)
+            hpBar.value = Mathf.Clamp01((float)health / maxHealth);
+
+        if (health <= 0)
+            Die();
+    }
+
+    // ===================== DIE =====================
     void Die()
     {
-        if (health <= 0)
-        {
-            if (NpcCharacterData != null)
-            {
-                string userEmail = GameDataManager.CurrentUserEmail;
-                
-                if(GameDataManager.Instance != null)
-                {
-                    if (string.IsNullOrEmpty(userEmail))
-                    {
-                        Debug.LogError("∑Œ±◊¿Œµ» ªÁøÎ¿⁄ ¿Ã∏ﬁ¿œ¿Ã GameDataManagerø° º≥¡§µ«¡ˆ æ æ“Ω¿¥œ¥Ÿ. ∫∏ªÛ ¡ˆ±ﬁ Ω«∆–.");
-                        return;
-                    }
+        if (isDead) return;
+        isDead = true;
 
-                    StartCoroutine(SendKillRewardRequest(userEmail, NpcCharacterData.npc_type_id));
-                    Destroy(transform.gameObject);
-                }
-                else
-                {
-                    Debug.Log("GameDataManager∏¶ ∏¯ √£¿Ω");
-                }
-            }
-        }
+        // 1Ô∏è‚É£ ÏãúÎØºÏù¥Î©¥ Í≤ΩÏ∞∞ Ïä§Ìè∞
+        if (!NpcCharacterData.is_hostile && PoliceManager.Instance != null)
+            PoliceManager.Instance.SpawnPoliceWave();
+
+        // 2Ô∏è‚É£ ÏÑúÎ≤ÑÏóê Î≥¥ÏÉÅ ÏöîÏ≤≠ (Ïù¥Í±¥ Í∑∏ÎåÄÎ°ú)
+        string userEmail = GameDataManager.CurrentUserEmail;
+        int npcId = NpcCharacterData.npc_type_id;
+        StartCoroutine(RequestReward(userEmail, npcId));
+
+        // 3Ô∏è‚É£ Í∏∞Îä•Îßå ÎÅÑÍ∏∞ (Destroy ‚ùå)
+        if (hpBar != null)
+            hpBar.gameObject.SetActive(false);
+
+        foreach (var col in GetComponentsInChildren<Collider>(true))
+            col.enabled = false;
+
+        var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent != null) agent.enabled = false;
+
+        foreach (var r in GetComponentsInChildren<Renderer>(true))
+            r.enabled = false;
+
+        // 4Ô∏è‚É£ Î¶¨Ïä§Ìè∞ ÏΩîÎ£®Ìã¥ ÏãúÏûë
+        StartCoroutine(RespawnCoroutine());
     }
 
-    private IEnumerator SendKillRewardRequest(string useremail, int npcId)
+
+    // ===================== SERVER REWARD =====================
+    IEnumerator RequestReward(string useremail, int npcTypeId)
     {
+        // Ïù¥Î©îÏùº ÏóÜÏúºÎ©¥ ÏÑúÎ≤Ñ Î∂àÍ∞Ä ‚Üí fallback
         if (string.IsNullOrEmpty(useremail))
         {
-            Debug.LogError("∫∏ªÛ ¡ˆ±ﬁ¿ª ¿ß«ÿº≠¥¬ «√∑π¿ÃæÓ ¿Ã∏ﬁ¿œ¿Ã « ø‰");
+            ApplyFallbackMoney();
             yield break;
         }
 
-        NpcKillRequest requestData = new NpcKillRequest { useremail = useremail, npcTypeId = npcId };
-        string jsonRequestBody = JsonConvert.SerializeObject(requestData);
+        var requestData = new NpcKillRequest
+        {
+            useremail = useremail,
+            npcTypeId = npcTypeId
+        };
+
+        string json = JsonConvert.SerializeObject(requestData);
 
         using (UnityWebRequest www = UnityWebRequest.PostWwwForm(RewardApiUrl, ""))
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonRequestBody);
-            www.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
             www.downloadHandler = new DownloadHandlerBuffer();
             www.SetRequestHeader("Content-Type", "application/json");
 
@@ -86,33 +114,72 @@ public class NPCCharacterController : MonoBehaviour
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                NpcKillResponse response = JsonConvert.DeserializeObject<NpcKillResponse>(www.downloadHandler.text);
+                try
+                {
+                    var response = JsonConvert.DeserializeObject<NpcKillResponse>(www.downloadHandler.text);
+                    if (response != null && response.success)
+                    {
+                        UIManager.Instance?.SetMoney(response.newMoney);
+                        yield break;
+                    }
+                }
+                catch { }
+            }
 
-                if (response.success)
-                {
-                    Debug.Log($"NPC √≥ƒ° ∫∏ªÛ ¡ˆ±ﬁ º∫∞¯! ±›æ◊: {response.rewardAmount}, «ˆ¿Á µ∑: {response.newMoney}");
-                    Destroy(transform.gameObject);
-                }
-                else
-                {
-                    Debug.LogError($" ∫∏ªÛ ¡ˆ±ﬁ Ω«∆–: {response.message}");
-                    Destroy(transform.gameObject);
-                }
-            }
-            else
-            {
-                Debug.LogError($" ∫∏ªÛ º≠πˆ ø‰√ª Ω«∆–: {www.error} (Code: {www.responseCode})");
-     
-            }
+            // ÏÑúÎ≤Ñ Ïã§Ìå® ‚Üí fallback
+            ApplyFallbackMoney();
         }
     }
 
+    void ApplyFallbackMoney()
+    {
+        if (!useLocalRewardFallback) return;
+
+        int money = (NpcCharacterData != null)
+            ? NpcCharacterData.base_money
+            : localFallbackMoney;
+
+        UIManager.Instance?.AddMoney(money);
+    }
+
+   
     private void OnCollisionEnter(Collision collision)
     {
+        if (isDead) return;
+
         if (collision.gameObject.CompareTag("Bullet"))
         {
-            health -= 100;
+            ApplyDamage(100);
             Destroy(collision.gameObject);
+        }
+    }
+
+    IEnumerator RespawnCoroutine()
+    {
+        yield return new WaitForSeconds(respawnDelay);
+
+        // Ï≤¥Î†• Ï¥àÍ∏∞Ìôî
+        health = maxHealth;
+        isDead = false;
+
+        // Îã§Ïãú ÏºúÍ∏∞
+        foreach (var r in GetComponentsInChildren<Renderer>(true))
+            r.enabled = true;
+
+        foreach (var col in GetComponentsInChildren<Collider>(true))
+            col.enabled = true;
+
+        var agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.ResetPath();
+        }
+
+        if (hpBar != null)
+        {
+            hpBar.gameObject.SetActive(true);
+            hpBar.value = 1f;
         }
     }
 }

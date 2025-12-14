@@ -7,7 +7,6 @@ public class UserData
     public int playerId;
     public string playerEmail;
     public string playerName;
-    public int playerLevel;
     public int currentMoney;
     public bool isDead;
     public string lastLoginTime;

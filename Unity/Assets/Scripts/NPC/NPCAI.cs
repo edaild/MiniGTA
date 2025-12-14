@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.AI;
 
 public class NPCAI : MonoBehaviour
@@ -7,13 +7,10 @@ public class NPCAI : MonoBehaviour
 
     public float walkSpeed = 1.5f;
     public float runSpeed = 3.5f;
-
     public float wanderRadius = 10f;
-
     public float alertRadius = 15f;
     public float alertTime = 4f;
-
-    public float fleeDistance = 10f;  // ¾ó¸¶³ª ¸Ö¸® µµ¸Á°¥Áö
+    public float fleeDistance = 10f;
 
     NavMeshAgent agent;
     Animator animator;
@@ -27,22 +24,36 @@ public class NPCAI : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
     }
 
-    void Start()
+    void OnEnable()
     {
-        agent.speed = walkSpeed;
-        agent.angularSpeed = 360f;
-        agent.acceleration = 50f;
+        // ğŸ”¥ ë¦¬ìŠ¤í°/ì¬í™œì„±í™” ì‹œ ì™„ì „ ì´ˆê¸°í™”
+        isAlert = false;
+        alertTimer = 0f;
+
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.speed = walkSpeed;
+            agent.ResetPath();
+        }
+
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) player = p.transform;
+        }
 
         SetRandomDestination();
     }
 
     void Update()
     {
+        if (agent == null || !agent.enabled) return;
+
         if (isAlert)
         {
             alertTimer -= Time.deltaTime;
 
-            
             if (!agent.pathPending && agent.remainingDistance < 0.5f)
             {
                 FleeFromPlayer();
@@ -75,7 +86,6 @@ public class NPCAI : MonoBehaviour
     void SetRandomDestination()
     {
         Vector3 randomDir = Random.insideUnitSphere * wanderRadius + transform.position;
-
         if (NavMesh.SamplePosition(randomDir, out NavMeshHit hit, wanderRadius, NavMesh.AllAreas))
         {
             agent.SetDestination(hit.position);
@@ -88,37 +98,29 @@ public class NPCAI : MonoBehaviour
 
         float currentDist = Vector3.Distance(transform.position, player.position);
 
-       
         for (int i = 0; i < 10; i++)
         {
-            
             Vector3 baseDir = (transform.position - player.position).normalized;
             if (baseDir.sqrMagnitude < 0.01f) baseDir = transform.forward;
 
-           
             float angle = Random.Range(-80f, 80f);
             Vector3 dir = Quaternion.Euler(0f, angle, 0f) * baseDir;
-
             Vector3 candidate = transform.position + dir * fleeDistance;
 
-           
             if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 3f, NavMesh.AllAreas))
             {
-            
                 float newDist = Vector3.Distance(hit.position, player.position);
                 if (newDist > currentDist + 1f)
                 {
-                    agent.SetDestination(hit.position);
                     agent.speed = runSpeed;
+                    agent.SetDestination(hit.position);
                     return;
                 }
             }
         }
 
-       
         SetRandomDestination();
     }
-
 
     public void OnGunShot()
     {
