@@ -80,4 +80,3 @@ FOREIGN KEY (`weapon_type_id`) REFERENCES `weapon_types` (`weapon_type_id`);
 ALTER TABLE `shop`
 ADD CONSTRAINT `fk_shop_weapon_type`
 FOREIGN KEY (`gun_id`) REFERENCES `weapon_types` (`weapon_type_id`);
-
