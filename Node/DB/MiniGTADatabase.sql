@@ -11,9 +11,6 @@ CREATE TABLE `players` (
   `respawn_cost` INT DEFAULT 0
 );
 
-drop table players;
-
-select * from players;
 
 CREATE TABLE `weapon_types` (
   `weapon_type_id` INT PRIMARY KEY AUTO_INCREMENT,
@@ -21,7 +18,6 @@ CREATE TABLE `weapon_types` (
   `base_damage` INT NOT NULL,
   `ammo_type` VARCHAR(32)
 );
-select player_id, player_email, player_name,  current_money. from players;
 
 INSERT INTO `weapon_types` (`weapon_name`, `base_damage`, `ammo_type`) VALUES
 ('권총', 15, 'Small Caliber'),
@@ -59,8 +55,6 @@ INSERT INTO npc_types (npc_name, is_hostile, base_health, base_damage, base_mone
 ('강력팀 경찰', true, 1000, 100, 350), 
 ('경찰 특공대', true, 1000, 150, 400);
 
-select npc_type_id, npc_name, is_hostile, base_health, base_damage, base_money from npc_types;
-
 
 CREATE TABLE `shop` (
   `shop_id` INT PRIMARY KEY AUTO_INCREMENT,
@@ -86,8 +80,4 @@ FOREIGN KEY (`weapon_type_id`) REFERENCES `weapon_types` (`weapon_type_id`);
 ALTER TABLE `shop`
 ADD CONSTRAINT `fk_shop_weapon_type`
 FOREIGN KEY (`gun_id`) REFERENCES `weapon_types` (`weapon_type_id`);
-
-select * from players;
-SELECT shop_id, w.weapon_name gun_name,  transaction_price, base_damage FROM shop s JOIN weapon_types w on s.gun_id = w.weapon_type_id
-
 
