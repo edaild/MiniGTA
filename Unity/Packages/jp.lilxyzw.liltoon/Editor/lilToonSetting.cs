@@ -732,7 +732,7 @@ public class lilToonSetting : ScriptableObject
             var startScenePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
             for(int i = -1; i < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings; i++)
             {
-                if(i >= 0) UnityEditor.SceneManagement.EditorSceneManager.OpenScene(UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i));
+               // if(i >= 0) UnityEditor.SceneManagement.EditorSceneManager.OpenScene(UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i));
                 WalkAllSceneReferencedAssets(callback, toVisit, visited);
             }
             UnityEditor.SceneManagement.EditorSceneManager.OpenScene(startScenePath);

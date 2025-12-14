@@ -12,12 +12,12 @@ const PORT = 3002;
 const INITIAL_MONEY = 1000;
 
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: ' 112233',
-    database: 'MiniGTA'
-});
+    host : 'localhost',
+    user : 'root',
+    password : '112233',
+    database : 'MiniGTA'
 
+});
 app.post('/membership', async(req, res) => {
     const { useremail, userpassword, username } = req.body;
 
